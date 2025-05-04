@@ -12,6 +12,7 @@ env:
   TARGET_INSTANCE_ID: "test"
   ECR_REPO: "habit-api"
   AWS_ROLE_TO_ASSUME: "arn:aws:iam::227370404427:role/GitHubActionsDeployRole"
+  AWS_ACCOUNT_ID: "227370404427"
 
 
 # Permission can be added at job level or workflow level
