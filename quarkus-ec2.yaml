@@ -79,9 +79,26 @@ Resources:
       
           apt-get update -y
           apt-get install -y docker-ce docker-ce-cli containerd.io \
-          docker-buildx-plugin docker-compose-plugin awscli
+          docker-buildx-plugin docker-compose-plugin awscli amazon-ecr-credential-helper
           usermod -aG docker ubuntu
           systemctl enable docker
+          
+          helper_ver=0.9.1
+          curl -fsSL -o /usr/local/bin/docker-credential-ecr-login \
+            "https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/${helper_ver}/linux-arm64/docker-credential-ecr-login"
+          chmod +x /usr/local/bin/docker-credential-ecr-login
+          ln -s /usr/local/bin/docker-credential-ecr-login /usr/bin/docker-credential-ecr-login
+          
+          mkdir -p /root/.docker
+          cat >/root/.docker/config.json <<'EOF'
+          {
+            "credHelpers": {
+              "227370404427.dkr.ecr.us-east-1.amazonaws.com": "ecr-login"
+            }
+          }
+          EOC
+          
+          systemctl restart docker
 
           # Mount the second EBS volume at /dbdata (if you kept it)
           mkfs -t xfs /dev/xvdb || true

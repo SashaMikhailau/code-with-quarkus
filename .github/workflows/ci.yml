@@ -51,6 +51,7 @@ jobs:
             -Dquarkus.container-image.name=content-api \
             -Dquarkus.container-image.registry=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com \
             -Dquarkus.container-image.group=habit
+            -Dquarkus.container-image.tag=latest
   redeploy:
     needs: build-and-push
     runs-on: ubuntu-latest
