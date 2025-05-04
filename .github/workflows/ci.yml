@@ -9,7 +9,7 @@ on:
 env:
 
   AWS_REGION : "us-east-1"
-  TARGET_INSTANCE_ID: "test"
+  TARGET_INSTANCE_ID: "i-07cb618bee22ac7e8"
   AWS_ROLE_TO_ASSUME: "arn:aws:iam::227370404427:role/GitHubActionsDeployRole"
   AWS_ACCOUNT_ID: "227370404427"
 
