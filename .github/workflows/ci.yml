@@ -51,7 +51,7 @@ jobs:
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.push=true \
             -Dquarkus.container-image.name=content-api \
-            -Dquarkus.docker.buildx.platform=linux/amd64,linux/arm64
+            -Dquarkus.docker.buildx.platform=linux/amd64,linux/arm64 \
             -Dquarkus.container-image.registry=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com \
             -Dquarkus.container-image.group=habit \
             -Dquarkus.container-image.tag=latest
