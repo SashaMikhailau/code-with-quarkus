@@ -71,6 +71,7 @@
             <groupId>com.contentful.java</groupId>
             <artifactId>java-sdk</artifactId>
             <version>10.5.21</version>
+            <exclusions><exclusion><groupId>com.contentful.java</groupId><artifactId>java-sdk-android</artifactId></exclusion></exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
