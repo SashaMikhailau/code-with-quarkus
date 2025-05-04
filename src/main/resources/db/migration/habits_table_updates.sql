@@ -1,0 +1,5 @@
+ALTER TABLE habits ADD COLUMN IF NOT EXISTS streak INTEGER DEFAULT 0;
+ALTER TABLE habits ADD COLUMN IF NOT EXISTS complexity INTEGER DEFAULT 0;
+
+UPDATE habits SET streak = 0 WHERE streak IS NULL;
+UPDATE habits SET complexity = 0 WHERE complexity IS NULL;
