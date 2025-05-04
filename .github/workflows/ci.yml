@@ -39,17 +39,13 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - uses: docker/setup-buildx-action@v3
 
-      - name: Build native executable
-        run: ./mvnw package -Pnative -Dquarkus.native.container-build=true
-
-      - name: Build & push multi-arch image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:latest
-          platforms: linux/amd64,linux/arm64   # ← makes both x86 and Arm layers
-          provenance: false
+      - name: Compile & build the container image, then push to ECR
+        run: |
+          ./mvnw package \
+            -Dquarkus.container-image.build=true \
+            -Dquarkus.container-image.push=true \
+            -Dquarkus.container-image.registry=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com \
+            -Dquarkus.container-image.group=${{ env.ECR_REPO }}
   redeploy:
     needs: build-and-push
     runs-on: ubuntu-latest
