@@ -31,8 +31,14 @@ jobs:
           role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
-      - name: Set up JDK 21 + buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Build native binary **and** container image, then push
+        run: |
+          ./mvnw package -Pnative \
+            -Dquarkus.native.container-build=true \
+            -Dquarkus.container-image.build=true \
+            -Dquarkus.container-image.push=true \
+            -Dquarkus.container-image.registry=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com \
+            -Dquarkus.container-image.group=${{ env.ECR_REPO }}
 
       - name: Build & push multi-arch image
         uses: docker/build-push-action@v5
