@@ -49,8 +49,8 @@ jobs:
           ./mvnw package \
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.push=true \
+            -Dquarkus.container-image.name=${{ env.ECR_REPO }} \
             -Dquarkus.container-image.registry=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com \
-            -Dquarkus.container-image.group=${{ env.ECR_REPO }}
   redeploy:
     needs: build-and-push
     runs-on: ubuntu-latest
