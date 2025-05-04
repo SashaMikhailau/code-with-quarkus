@@ -61,7 +61,7 @@ Resources:
         # Postgres
         - DeviceName: /dev/xvdb
           Ebs: { VolumeSize: 5, VolumeType: gp3, Encrypted: true, DeleteOnTermination: false }
-      ImageId: !Sub "{{resolve:ssm:/aws/service/canonical/ubuntu/server/22.04/stable/current/arm64/hvm/ebs-gp3/ami-id}}"
+      ImageId: !Sub "{{resolve:ssm:/aws/service/ami‑ubuntu‑latest/ubuntu‑jammy‑arm64‑server}}"
       UserData:
         Fn::Base64: !Sub |
           #!/usr/bin/env bash
@@ -90,7 +90,7 @@ Resources:
               volumes:
                 - /dbdata:/var/lib/postgresql/data     # persistent EBS
             app:
-              image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/habit-api:latest
+              image: 227370404427.dkr.ecr.us-east-1.amazonaws.com/habit/content-api:latest
               restart: unless-stopped
               ports:
                 - "8080:8080"
