@@ -9,23 +9,54 @@ on:
 env:
 
   AWS_REGION : "us-east-1"
+  TARGET_INSTANCE_ID: "test"
+  ECR_REPO: "habit-api"
+  AWS_ROLE_TO_ASSUME: "arn:aws:iam::227370404427:role/GitHubActionsDeployRole"
+
 
 # Permission can be added at job level or workflow level
 permissions:
   id-token: write   # This is required for requesting the JWT
   contents: read    # This is required for actions/checkout
 jobs:
-  AssumeRoleAndCallIdentity:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - name: Git clone the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::227370404427:role/GitHubActionsDeployRole
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
-      - name: Sts GetCallerIdentity
+      - name: Set up JDK 21 + buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push multi-arch image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:latest
+          platforms: linux/amd64,linux/arm64   # ← makes both x86 and Arm layers
+          provenance: false
+  redeploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Tell the instance to pull the new image
         run: |
-          aws sts get-caller-identity
+          aws ssm send-command \
+            --instance-ids "${{ env.TARGET_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Redeploy Quarkus" \
+            --parameters commands="docker compose -f /opt/quarkus/docker-compose.yml pull app && \
+                                    docker compose -f /opt/quarkus/docker-compose.yml up -d --no-deps app"
