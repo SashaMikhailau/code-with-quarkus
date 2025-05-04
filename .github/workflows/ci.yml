@@ -10,7 +10,6 @@ env:
 
   AWS_REGION : "us-east-1"
   TARGET_INSTANCE_ID: "test"
-  ECR_REPO: "habit-api"
   AWS_ROLE_TO_ASSUME: "arn:aws:iam::227370404427:role/GitHubActionsDeployRole"
   AWS_ACCOUNT_ID: "227370404427"
 
@@ -49,8 +48,9 @@ jobs:
           ./mvnw package \
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.push=true \
-            -Dquarkus.container-image.name=${{ env.ECR_REPO }} \
+            -Dquarkus.container-image.name=content-api \
             -Dquarkus.container-image.registry=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com \
+            -Dquarkus.container-image.group=habit
   redeploy:
     needs: build-and-push
     runs-on: ubuntu-latest
