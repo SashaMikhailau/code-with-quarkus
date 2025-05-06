@@ -66,6 +66,12 @@ jobs:
           role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
+      - name: Get instance ID from tag
+        run: |
+          echo "TARGET_INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:${{ env.TARGET_INSTANCE_TAG_NAME }},Values=${{ env.TARGET_INSTANCE_TAG_VALUE }}" "Name=instance-state-name,Values=running" \
+            --query "Reservations[0].Instances[0].InstanceId" \
+            --output text)" >> $GITHUB_ENV
 
       - name: Tell the instance to pull the new image
         run: |
