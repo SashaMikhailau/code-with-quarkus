@@ -24,13 +24,13 @@ public class Startup {
         }
 
         // Add players only if they don't exist
-        if (Player.find("username", "user").count() == 0) {
+        if (Player.findById("user") == null) {
             Player.persist(new Player("user", "user"));
         }
-        if (Player.find("username", "admin").count() == 0) {
+        if (Player.findById("admin") == null) {
             Player.persist(new Player("admin", "admin"));
         }
-        if (Player.find("username", "qa").count() == 0) {
+        if (Player.findById("qa") == null) {
             Player.persist(new Player("qa", "qa"));
         }
 
