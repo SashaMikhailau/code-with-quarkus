@@ -20,7 +20,10 @@ public class Startup {
             User.add("user", "user", UserRoles.USER);
         }
         if (User.find("username", "qa").count() == 0) {
-            User.add("qa", "qa", UserRoles.USER);
+            User.add("qa", "qa", UserRoles.QA);
+        }
+        if (User.find("username", "azya").count() == 0) {
+            User.add("azya", "a1z2y3a4", UserRoles.USER);
         }
 
         // Add players only if they don't exist
@@ -29,6 +32,9 @@ public class Startup {
         }
         if (Player.findById("admin") == null) {
             Player.persist(new Player("admin", "admin"));
+        }
+        if (Player.findById("azya") == null) {
+            Player.persist(new Player("azya", "Azya"));
         }
         if (Player.findById("qa") == null) {
             Player.persist(new Player("qa", "qa"));

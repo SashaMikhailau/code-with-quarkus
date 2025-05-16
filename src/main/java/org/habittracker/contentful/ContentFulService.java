@@ -37,7 +37,7 @@ public class ContentFulService {
 
     private final Map<Class, Collection> cache = new HashMap<>();
 
-    private LocalDateTime lastDelivery;
+    private final Map<Class, LocalDateTime> lastDeliveryMap = new HashMap<>();
 
     public ContentFulService() {
         this.client = CDAClient.builder()
@@ -60,14 +60,17 @@ public class ContentFulService {
 
 
     public <T> Collection<T> getAllItems(Class<T> clazz) {
-        if (!cache.containsKey(clazz) || (lastDelivery == null || lastDelivery.plusMinutes(5).isBefore(LocalDateTime.now()))) {
+        LocalDateTime lastDeliveryForClass = lastDeliveryMap.get(clazz);
+        boolean isCacheExpired = lastDeliveryForClass == null || lastDeliveryForClass.plusMinutes(5).isBefore(LocalDateTime.now());
+
+        if (!cache.containsKey(clazz) || isCacheExpired) {
             Collection<T> results = client
                     .observeAndTransform(clazz)
                     .include(3)
                     .all()
                     .blockingSingle();
             cache.put(clazz, results);
-            lastDelivery = LocalDateTime.now();
+            lastDeliveryMap.put(clazz, LocalDateTime.now());
             return results;
         } else {
             return cache.get(clazz);
